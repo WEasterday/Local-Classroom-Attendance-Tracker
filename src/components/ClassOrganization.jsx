@@ -68,7 +68,7 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation }) => {
 
         else{
             const attendanceRecord = {
-                date: calendarDateToObject(todayDate),
+                date: calendarDateToObject(today),
                 selectedRotation,
                 selectedPeriod,
                 presentStudents: selectedStudents,
