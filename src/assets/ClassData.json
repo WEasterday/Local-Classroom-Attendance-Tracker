@@ -1,0 +1,70 @@
+{
+  "A": [
+    {
+      "period": 1,
+      "students": [
+        { "name": "Alice Johnson" },
+        { "name": "Bob Smith" },
+        { "name": "Charlie Lee" }
+      ]
+    },
+    {
+      "period": 2,
+      "students": [
+        { "name": "David Kim" },
+        { "name": "Eva Brown" },
+        { "name": "Frank White" }
+      ]
+    },
+    {
+      "period": 3,
+      "students": [
+        { "name": "Grace Green" },
+        { "name": "Henry Black" },
+        { "name": "Ivy Blue" }
+      ]
+    },
+    {
+      "period": 4,
+      "students": [
+        { "name": "Jack Red" },
+        { "name": "Kara Orange" },
+        { "name": "Liam Purple" }
+      ]
+    }
+  ],
+  "B": [
+    {
+      "period": 1,
+      "students": [
+        { "name": "Anna White" },
+        { "name": "Ben Black" },
+        { "name": "Cathy Silver" }
+      ]
+    },
+    {
+      "period": 2,
+      "students": [
+        { "name": "Derek Blue" },
+        { "name": "Ella Gold" },
+        { "name": "Fred Green" }
+      ]
+    },
+    {
+      "period": 3,
+      "students": [
+        { "name": "Gina Pink" },
+        { "name": "Hank Gray" },
+        { "name": "Iris Violet" }
+      ]
+    },
+    {
+      "period": 4,
+      "students": [
+        { "name": "Jake Brown" },
+        { "name": "Kylie Red" },
+        { "name": "Leo Orange" }
+      ]
+    }
+  ]
+}

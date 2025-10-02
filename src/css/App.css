@@ -1,0 +1,32 @@
+#header-row{
+    display: flex;
+    height: 50px;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--primary);
+}
+
+.header-item{
+    width: 100px;
+    text-align: center;
+}
+
+.selected{
+    background-color: var(--secondary);
+    color: blue;
+}
+
+#student-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.student-item {
+  background: #f0f0f0;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
