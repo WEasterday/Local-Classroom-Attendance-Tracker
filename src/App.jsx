@@ -51,19 +51,18 @@ function App() {
         <Route 
           path="/classselection"
           element={
-            isAdmin 
-              ? <ClassSelection isAdmin={true} /> 
-              : isAuthenticated 
-                ? <ClassSelection isAdmin={false} />
-                : <Navigate to="/" />
+            (isAdmin || isAuthenticated) 
+              ? <ClassSelection isAdmin={isAdmin} /> 
+              : <Navigate to="/" />
           }
         />
         <Route 
-          path="/students" 
-          element={isAuthenticated || sessionStorage.getItem("inStudentSelection") === "true"
-            ? <StudentSelection/>
-            : <Navigate to="/"/>
-          } 
+          path="/students"
+          element={
+            (isAdmin || isAuthenticated)
+              ? <StudentSelection isAdmin={isAdmin} />
+              : <Navigate to="/" />
+          }
         />
         <Route 
           path="/classdata" 

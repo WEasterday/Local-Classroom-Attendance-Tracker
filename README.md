@@ -5,3 +5,4 @@
 - npm install @heroui/react
 - npm install @internationalized/date
 
+npx tailwindcss -i ./src/css/index.css -o ./dist/output.css --watch

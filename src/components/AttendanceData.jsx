@@ -22,19 +22,35 @@ const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation }) => {
                 Attendance for {selectedRotation}{selectedPeriod} {attendance.date.month}/{attendance.date.day}/{attendance.date.year}
             </h2>
 
-            <h3>Present Students</h3>
+            <h3 class="font-bold">Present Students</h3>
             <ul>
                 {attendance.presentStudents.map((student, index) => (
                     <li key={`present-${index}`}>{student.name} at {student.timestamp}</li>
                 ))}
             </ul>
 
-            <h3>Absent Students</h3>
+            <h3 class="font-bold">Absent Students</h3>
             <ul>
                 {attendance.absentStudents.map((student, index) => (
                     <li key={`absent-${index}`}>{student.name}</li>
                 ))}
             </ul>
+
+            {/* <div className="mt-4 flex gap-3">
+                <button
+                    onClick={downloadSingleCSV}
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                >
+                    Download This Class CSV
+                </button>
+
+                <button
+                    onClick={downloadAllForDateCSV}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                    Download All Classes for This Day
+                </button>
+            </div> */}
         </div>
     );
 }

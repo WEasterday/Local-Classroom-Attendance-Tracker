@@ -1,9 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { calendarDateToObject, formatDateKey, getTodayDate } from "../utils/dateUtils";
 
-const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation }) => {
+const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, selectedDate }) => {
 
     const [selectedStudents, setSelectedStudents] = useState([]);
+
+    useEffect(() => {
+        const day = selectedDate ? selectedDate : getTodayDate();
+        const dateKey = formatDateKey(day);
+        const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
+
+        const existingRecord = stored[selectedRotation]?.[selectedPeriod]?.[dateKey];
+        if (existingRecord && existingRecord.presentStudents) {
+            setSelectedStudents(existingRecord.presentStudents);
+        }
+    }, [selectedDate, selectedRotation, selectedPeriod]);
 
     const handleClassEntry = (studentName) => {
         const currentTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -20,8 +31,8 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation }) => {
     };
 
     const submitClassAttendance = () => {
-        const today = getTodayDate();
-        const dateKey = formatDateKey(today);
+        const day = selectedDate ? selectedDate : getTodayDate();
+        const dateKey =  formatDateKey(day);
 
         const absentStudents = (classInfo?.students || []).filter(
             (studentObj) => !selectedStudents.some((selectedStudentObj) => selectedStudentObj.name === studentObj.name)
@@ -68,7 +79,7 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation }) => {
 
         else{
             const attendanceRecord = {
-                date: calendarDateToObject(today),
+                date: calendarDateToObject(day),
                 selectedRotation,
                 selectedPeriod,
                 presentStudents: selectedStudents,
