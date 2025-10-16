@@ -4,8 +4,10 @@ import { useNavigate } from "react-router"
 import PeriodController from '../components/PeriodController.jsx'
 import DateController from '../components/DateController.jsx'
 import RotationController from '../components/RotationController.jsx'
+import { RippleButton } from "../components/ripple-button";
 import classData from '../assets/ClassData.json'
 import { getTodayDate } from "../utils/dateUtils";
+
 
 const ClassSelection = ({isAdmin}) => {   
     const baseClass = "px-4 py-2 rounded font-semibold transition-colors bg-baseOrange hover:bg-darkOrange text-white";
