@@ -12,6 +12,7 @@ export default {
         baseOrange: '#f8941d',
         darkOrange: '#ac6206',
         redAccent: '#c01e2e',
+        lightGray: '#bfc0c2'
       },
     },
   },

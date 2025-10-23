@@ -3,9 +3,26 @@
     {
       "period": 1,
       "students": [
-        { "name": "Alice Johnson" },
-        { "name": "Bob Smith" },
-        { "name": "Charlie Lee" }
+        { 
+          "name": "Alice Johnson", 
+          "sound": "src/assets/mixkit-cool-interface-click-tone-2568.wav",
+          "text": "blue",
+          "background": "red"
+        },
+        { 
+          "name": "Bob Smith",
+          "sound": "src/assets/mixkit-sci-fi-click-900.wav"
+        },
+        { "name": "Charlie Lee" },
+        { "name": "Name 4"},
+        { "name": "Name 5"},
+        { "name": "Name 6"},
+        { "name": "Name 7"},
+        { "name": "Name 8"},
+        { "name": "Name 9"},
+        { "name": "Name 10"},
+        { "name": "Name 11"},
+        { "name": "Name 12"}
       ]
     },
     {

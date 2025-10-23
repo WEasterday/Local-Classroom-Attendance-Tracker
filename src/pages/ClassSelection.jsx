@@ -4,13 +4,12 @@ import { useNavigate } from "react-router"
 import PeriodController from '../components/PeriodController.jsx'
 import DateController from '../components/DateController.jsx'
 import RotationController from '../components/RotationController.jsx'
-import { RippleButton } from "../components/ripple-button";
 import classData from '../assets/ClassData.json'
 import { getTodayDate } from "../utils/dateUtils";
 
 
 const ClassSelection = ({isAdmin}) => {   
-    const baseClass = "px-4 py-2 rounded font-semibold transition-colors bg-baseOrange hover:bg-darkOrange text-white";
+    const baseClass = "px-6 py-2 rounded-xl font-semibold transition-colors bg-baseOrange hover:bg-darkOrange text-white shadow-sm";
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -39,7 +38,7 @@ const ClassSelection = ({isAdmin}) => {
     };
 
     return (
-        <>
+        <div className="flex flex-col items-center mx-auto mt-10 p-6 sm:p-10 max-w-lg w-full border rounded-2xl shadow-lg bg-white">
             <RotationController
                 selectedRotation={selectedRotation}
                 setSelectedRotation={setSelectedRotation}
@@ -50,7 +49,7 @@ const ClassSelection = ({isAdmin}) => {
                 setSelectedPeriod={setSelectedPeriod}
                 selectedDay={selectedDay}
             />
-            <div className="flex items-center flex-col p-5">
+            <div className="flex flex-col items-center w-full gap-5 mt-4">
                 {isAdmin && (
                     <DateController
                         selectedDate={selectedDate}
@@ -58,7 +57,7 @@ const ClassSelection = ({isAdmin}) => {
                     />
                 )}
 
-                <div className="flex justify-evenly gap-5 p-5">
+                <div className="flex flex-wrap justify-center gap-4">
                     <button className={baseClass} onClick={() => handleContinue()}>
                         Continue
                     </button>
@@ -69,7 +68,7 @@ const ClassSelection = ({isAdmin}) => {
                     )}
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

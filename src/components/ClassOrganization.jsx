@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { calendarDateToObject, formatDateKey, getTodayDate } from "../utils/dateUtils";
+import RippleButton from "./ripple-button";
 
 const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, selectedDate }) => {
 
@@ -15,6 +16,13 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
             setSelectedStudents(existingRecord.presentStudents);
         }
     }, [selectedDate, selectedRotation, selectedPeriod]);
+
+    const playSound = (studentSound) => {
+        const audio = (studentSound) ? new Audio(studentSound) : new Audio("src/assets/mixkit-mouse-click-close-1113.wav");
+        audio.play();
+    };
+
+    
 
     const handleClassEntry = (studentName) => {
         const currentTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -93,25 +101,51 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
     }
 
     return (
-        <div>
-            <ul id="student-list">
+        // save presently students in a seperate local storage in case of refresh
+        <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-wrap justify-center gap-3">
                 {classInfo.students.map((student, index) => {
                     const isSelected = selectedStudents.some(
                         (studentObj) => studentObj.name === student.name
                     );
 
-                    return(
-                        <li
+                    return (
+                        <RippleButton
                             key={`${classInfo.period}-${student.name}-${index}`}
-                            className={`student-item ${isSelected ? "selected" : ""}`}
-                            onClick={() => handleClassEntry(student.name)}
+                            onClick={() => {
+                                handleClassEntry(student.name);
+                                playSound(student.sound);
+                            }}
+                            rippleClassName="bg-white/50"
+                            variant={isSelected ? "outline" : "default"}
+                            size="sm"
+                            className={`w-36 h-18 text-center font-semibold transition-colors duration-400
+                                ${isSelected
+                                    ? "bg-black text-white"
+                                    : "bg-baseOrange hover:bg-darkOrange text-white"
+                                }`}
+                            style={{
+                                backgroundColor: !isSelected && student.background
+                                    ? student.background
+                                    : undefined,
+                                color: !isSelected && student.text
+                                    ? student.text
+                                    : undefined,
+                            }}
                         >
                             {student.name}
-                        </li>
+                        </RippleButton>
                     );
                 })}
-            </ul>
-            <button onClick={() => submitClassAttendance()}>submit</button>
+            </div>
+
+            <RippleButton
+                onClick={submitClassAttendance}
+                rippleClassName="bg-white/50"
+                className="mt-6 w-32 bg-green-600 hover:bg-green-700 text-white font-semibold py-2"
+            >
+                Submit
+            </RippleButton>
         </div>
     );
 }

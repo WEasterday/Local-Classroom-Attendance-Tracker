@@ -6,5 +6,6 @@
 - npm install @internationalized/date
 - npm install motion
 - npm install class-variance-authority
+- npm install lucide-react
 
 npx tailwindcss -i ./src/css/index.css -o ./dist/output.css --watch

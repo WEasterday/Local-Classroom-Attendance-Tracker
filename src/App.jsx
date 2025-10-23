@@ -59,9 +59,10 @@ function App() {
         <Route 
           path="/students"
           element={
-            (isAdmin || isAuthenticated)
+            (isAdmin || isAuthenticated || sessionStorage.getItem("inStudentSelection"))
               ? <StudentSelection isAdmin={isAdmin} />
               : <Navigate to="/" />
+                
           }
         />
         <Route 

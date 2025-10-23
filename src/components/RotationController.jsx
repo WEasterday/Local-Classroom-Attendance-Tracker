@@ -13,12 +13,12 @@ const RotationController = ({ selectedRotation, setSelectedRotation }) => {
             variant={isSelected ? "outline" : "default"}
             size="default"
             className={`
-              px-6 py-2 font-semibold rounded transition-colors
+              font-semibold rounded transition-colors text-center text-white transition-colors duration-200
               ${isSelected
-                ? "bg-sky-700 text-white"
-                : "bg-sky-500 hover:bg-sky-600 text-white"}
+                ? "bg-black text-white"
+                : "bg-baseOrange hover:bg-darkOrange text-white"}
             `}
-            rippleClassName={isSelected ? "bg-sky-300" : "bg-white/50"}
+            rippleClassName="bg-white/50"
           >
             {rotation} Day
           </RippleButton>

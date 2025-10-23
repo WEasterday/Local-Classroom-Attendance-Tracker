@@ -2,7 +2,7 @@ import { RippleButton } from "../components/ripple-button";
 
 const PeriodController = ({ selectedPeriod, setSelectedPeriod, selectedDay }) => {
   return (
-    <div className="flex h-12 justify-around items-center gap-3">
+    <div className="flex flex-wrap justify-center items-center gap-3 h-auto sm:h-12">
       {selectedDay.map((classPeriod) => {
         const isSelected = selectedPeriod === classPeriod.period;
 
@@ -15,7 +15,7 @@ const PeriodController = ({ selectedPeriod, setSelectedPeriod, selectedDay }) =>
             className={`
               w-24 text-center text-white transition-colors duration-200
               ${isSelected 
-                ? "bg-black font-semibold border border-2 border-redAccent" 
+                ? "bg-black font-semibold" 
                 : "bg-baseOrange hover:bg-darkOrange"
               }
             `}
