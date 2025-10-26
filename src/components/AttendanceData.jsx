@@ -1,6 +1,6 @@
 import { formatDateKey } from "../utils/dateUtils";
 
-const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation }) => {
+const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation, selectedDateTypeObj}) => {
     const baseClass = "px-4 py-2 rounded font-semibold transition-colors bg-baseOrange hover:bg-darkOrange text-white"
     const dateKey = formatDateKey(selectedDate);
     const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
@@ -10,13 +10,13 @@ const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation }) => {
 
     const downloadSingleCSV = () => {
         const allStudents = [
-            ...attendance.presentStudents.map(s => ({
-                Name: s.name,
+            ...attendance.presentStudents.map(student => ({
+                Name: student.name,
                 Status: "Present",
-                Timestamp: s.timestamp || "",
+                Timestamp: student.timestamp || "",
             })),
-            ...attendance.absentStudents.map(s => ({
-                Name: s.name,
+            ...attendance.absentStudents.map(student => ({
+                Name: student.name,
                 Status: "Absent",
                 Timestamp: "",
             })),
@@ -31,7 +31,7 @@ const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation }) => {
         ]);
 
         // figure out why timestamp is ###### in excel
-        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        const csvContent = [headers, ...rows].map(element => element.join(",")).join("\n");
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
 
@@ -53,20 +53,24 @@ const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation }) => {
     return (
         <div>
             <h2>
-                Attendance for {selectedRotation}{selectedPeriod} {attendance.date.month}/{attendance.date.day}/{attendance.date.year}
+                {selectedRotation} Day {selectedPeriod} Period {attendance.date.month}/{attendance.date.day}/{attendance.date.year}
             </h2>
 
-            <h3 class="font-bold">Present Students</h3>
+            <h2>
+                {selectedDateTypeObj.description} Schedule from {selectedDateTypeObj[selectedPeriod].start} - {selectedDateTypeObj[selectedPeriod].end}
+            </h2>
+
+            <h3 className="font-bold">Present Students</h3>
             <ul>
                 {attendance.presentStudents.map((student, index) => (
                     <li key={`present-${index}`}>{student.name} at {student.timestamp}</li>
                 ))}
             </ul>
 
-            <h3 class="font-bold">Absent Students</h3>
+            <h3 className="font-bold">Absent Students</h3>
             <ul>
                 {attendance.absentStudents.map((student, index) => (
-                    <li key={`absent-${index}`}>{student.name}</li>
+                    <li key={`absent-${index}`}>{`${student.name} ${student.note  || ""} ${student.timestamp  || ""}`}</li>
                 ))}
             </ul>
 

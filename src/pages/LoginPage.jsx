@@ -25,23 +25,20 @@ const LoginPage = ({ onLogin, onAdminLogin, resetAuth }) => {
                 navigate("/classselection")
                 break;
             default:
-                // alert("Invalid password");
                 setIsPasswordIncorrect(true);
         } 
-    }
-
-//  <img src="src\assets\GB_Logo2.png" alt="" />
+    };
 
     return(
-        <div className="flex items-center justify-center min-h-screen">
-           
+        <div className="flex flex-col items-center justify-center min-h-screen gap-10">
+            <img src="src\assets\GB_Logo2.png" className="h-48 w-auto" />
             <div className="flex flex-col border rounded-lg shadow-md pb-2">
                 <form 
                     onSubmit={handleLogin} 
                     className="flex flex-row gap-4 p-4 pb-2"
                 >
                     <input 
-                        type="text" 
+                        type="password" 
                         className="w-40 border border-baseOrange rounded px-2 py-1 focus:outline-none"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}

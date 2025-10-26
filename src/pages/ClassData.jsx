@@ -6,7 +6,7 @@ const ClassData = () => {
     const baseClass = "px-4 py-2 rounded font-semibold transition-colors bg-baseOrange hover:bg-darkOrange text-white";
     const location = useLocation();
     const navigate = useNavigate();
-    const { selectedRotation, selectedPeriod, selectedDate } = location.state || {};
+    const { selectedRotation, selectedPeriod, selectedDate, selectedDateTypeObj } = location.state || {};
 
     if (!selectedRotation || !selectedPeriod) {
         return <p>No class selected. Go back to home.</p>;
@@ -14,7 +14,7 @@ const ClassData = () => {
 
     const handleContinueBack = () => {
         navigate("/classselection", {
-            state: { selectedRotation, selectedPeriod, selectedDate }
+            state: { selectedRotation, selectedPeriod, selectedDate, selectedDateTypeObj }
         });
     };
 
@@ -24,6 +24,7 @@ const ClassData = () => {
                 selectedDate={selectedDate}
                 selectedRotation={selectedRotation}
                 selectedPeriod={selectedPeriod}
+                selectedDateTypeObj={selectedDateTypeObj}
             />
             <button className={baseClass} onClick={() => handleContinueBack()}>
                 Go Back  

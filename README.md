@@ -8,4 +8,5 @@
 - npm install class-variance-authority
 - npm install lucide-react
 
+npm run dev -- --host
 npx tailwindcss -i ./src/css/index.css -o ./dist/output.css --watch

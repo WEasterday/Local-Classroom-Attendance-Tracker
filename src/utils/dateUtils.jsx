@@ -17,3 +17,12 @@ export const calendarDateToObject = (calendarDate) => ({
     day: calendarDate.day.toString().padStart(2, "0"),
     year: calendarDate.year,
 });
+
+export const getCurrentTime = () => {
+    return new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hours12: true,
+    });
+}

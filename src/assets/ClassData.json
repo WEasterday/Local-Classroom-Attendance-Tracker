@@ -1,7 +1,7 @@
 {
   "A": [
     {
-      "period": 1,
+      "period": "6th Grade",
       "students": [
         { 
           "name": "Alice Johnson", 
@@ -13,7 +13,11 @@
           "name": "Bob Smith",
           "sound": "src/assets/mixkit-sci-fi-click-900.wav"
         },
-        { "name": "Charlie Lee" },
+        { 
+          "name": "Charlie Lee",
+          "text": "orange",
+          "background": "purple"
+        },
         { "name": "Name 4"},
         { "name": "Name 5"},
         { "name": "Name 6"},
@@ -26,7 +30,7 @@
       ]
     },
     {
-      "period": 2,
+      "period": "7th Grade",
       "students": [
         { "name": "David Kim" },
         { "name": "Eva Brown" },
@@ -34,7 +38,7 @@
       ]
     },
     {
-      "period": 3,
+      "period": "8th Grade",
       "students": [
         { "name": "Grace Green" },
         { "name": "Henry Black" },
@@ -42,7 +46,7 @@
       ]
     },
     {
-      "period": 4,
+      "period": "Enrichment",
       "students": [
         { "name": "Jack Red" },
         { "name": "Kara Orange" },
@@ -52,7 +56,7 @@
   ],
   "B": [
     {
-      "period": 1,
+      "period": "6th Grade",
       "students": [
         { "name": "Anna White" },
         { "name": "Ben Black" },
@@ -60,7 +64,7 @@
       ]
     },
     {
-      "period": 2,
+      "period": "7th Grade",
       "students": [
         { "name": "Derek Blue" },
         { "name": "Ella Gold" },
@@ -68,7 +72,7 @@
       ]
     },
     {
-      "period": 3,
+      "period": "8th Grade",
       "students": [
         { "name": "Gina Pink" },
         { "name": "Hank Gray" },
@@ -76,7 +80,7 @@
       ]
     },
     {
-      "period": 4,
+      "period": "Enrichment",
       "students": [
         { "name": "Jake Brown" },
         { "name": "Kylie Red" },
