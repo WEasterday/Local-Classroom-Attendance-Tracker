@@ -120,7 +120,10 @@ function RippleButton({
       onClick={handleClick}
       whileTap={{ scale: 0.95 }}
       whileHover={{ scale: 1.05 }}
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(
+        buttonVariants({ variant, size }),
+        className
+      )}
       {...props}
     >
       {children}

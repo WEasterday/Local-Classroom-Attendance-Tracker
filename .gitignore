@@ -25,4 +25,4 @@ dist-ssr
 
 # Ignore data files
 src/assets/ClassData.json
-src/assets/Roster.cs
+src/assets/Roster.csv

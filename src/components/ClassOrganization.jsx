@@ -4,13 +4,26 @@ import RippleButton from "./ripple-button";
 
 const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, selectedDate, selectedDateTypeObj }) => {
     const buildClassKey = (rotation, period, date) => `${rotation}-${period}-${formatDateKey(date)}`;
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const [selectedStudents, setSelectedStudents] = useState(() => {
         const day = selectedDate || getTodayDate();
         const classKey = buildClassKey(selectedRotation, selectedPeriod, day);
 
         const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
-        const existingRecord = stored?.[selectedRotation]?.[selectedPeriod]?.[formatDateKey(day)] || {};
+        
+        const enrichmentMergedRecord =
+            selectedPeriod.toLowerCase().includes("enrichment")
+                ? {
+                    ...(stored?.["A"]?.[selectedPeriod]?.[formatDateKey(day)] || {}),
+                    ...(stored?.["B"]?.[selectedPeriod]?.[formatDateKey(day)] || {}),
+                }
+                : {};
+
+        const existingRecord =
+            enrichmentMergedRecord.presentStudents || enrichmentMergedRecord.absentStudents
+                ? enrichmentMergedRecord
+                : stored?.[selectedRotation]?.[selectedPeriod]?.[formatDateKey(day)] || {};
 
         const existingStudents = [
             ...(existingRecord.presentStudents || []),
@@ -37,6 +50,20 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
         tempStorage[classKey] = selectedStudents;
         sessionStorage.setItem("selectedStudentsTemp", JSON.stringify(tempStorage));
     }, [selectedStudents, selectedRotation, selectedPeriod, selectedDate]);
+
+    useEffect(() => {
+        const day = selectedDate || getTodayDate();
+        const dateKey = formatDateKey(day);
+
+        const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
+        
+        const record = selectedPeriod.toLowerCase().includes("enrichment")
+            ? {
+                ...(stored?.["A"]?.[selectedPeriod]?.[dateKey] || {}),
+                ...(stored?.["B"]?.[selectedPeriod]?.[dateKey] || {}),
+            }
+            : stored?.[selectedRotation]?.[selectedPeriod]?.[dateKey];
+    }, [refreshTrigger, selectedPeriod, selectedRotation, selectedDate]);
 
     const playSound = (studentSound) => {
         const audio = studentSound
@@ -170,6 +197,14 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
             absentStudents: finalAbsentStudents,
         };
 
+         if (selectedPeriod.toLowerCase().includes("enrichment")) {
+            ["A", "B"].forEach((rotation) => {
+                if (!stored[rotation]) stored[rotation] = {};
+                if (!stored[rotation][selectedPeriod]) stored[rotation][selectedPeriod] = {};
+                stored[rotation][selectedPeriod][dateKey] = stored[selectedRotation][selectedPeriod][dateKey];
+            });
+        }
+
         // Remove submitted students from temp storage
         const tempStorage = JSON.parse(sessionStorage.getItem("selectedStudentsTemp")) || {};
         if (tempStorage[classKey]) {
@@ -180,11 +215,19 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
         }
 
         localStorage.setItem("attendanceRecords", JSON.stringify(stored));
+        setRefreshTrigger(prev => prev + 1);
     };
 
     const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
     const day = selectedDate || getTodayDate();
     const dateKey = formatDateKey(day);
+
+    const record = selectedPeriod.toLowerCase().includes("enrichment")
+        ? {
+              ...(stored?.["A"]?.[selectedPeriod]?.[dateKey] || {}),
+              ...(stored?.["B"]?.[selectedPeriod]?.[dateKey] || {}),
+          }
+        : stored?.[selectedRotation]?.[selectedPeriod]?.[dateKey];
 
     return (
         <div className="flex flex-col items-center gap-4">
@@ -198,8 +241,6 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
             />
             <div className="flex flex-wrap justify-center gap-3">
                 {classInfo.students.map((student, index) => {
-                    const record = stored?.[selectedRotation]?.[selectedPeriod]?.[dateKey];
-
                     const isSubmitted = record?.presentStudents
                         ?.filter((presentStudent) => presentStudent.note !== "FLAGGED")
                         ?.some((presentStudent) => presentStudent.name === student.name);
@@ -212,18 +253,18 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
                     return (
                         <RippleButton
                             key={`${classInfo.period}-${student.name}-${index}`}
-                            disabled={isSubmitted}
+                            disabled={isSubmitted || isFlagged}
                             onClick={() => {
-                                if (!isSubmitted) {
+                                if (!isSubmitted && !isFlagged) {
                                     handleClassEntry(student.name);
                                     playSound(student.sound);
                                 }
                             }}
-                            className={`w-36 h-18 text-center font-semibold ${
+                            className={`w-44 h-20 text-center font-semibold ${
                                 isSubmitted
-                                    ? "opacity-50 cursor-not-allowed"
+                                    ? "opacity-50 cursor-not-allowed bg-lightGray text-white"
                                     : isFlagged
-                                        ? "bg-red-600 text-white hover:bg-red-700"
+                                        ? "bg-redAccent text-white"
                                         : isSelected
                                             ? "bg-black text-white"
                                             : "bg-baseOrange hover:bg-darkOrange text-white"

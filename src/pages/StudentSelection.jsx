@@ -120,13 +120,15 @@ const StudentSelection = ({isAdmin}) => {
                     <div className="h-8 w-23"/>
                 )}
             </div>
-            <ClassOrganization
-                classInfo={selectedClass}
-                selectedPeriod={selectedPeriod}
-                selectedRotation={selectedRotation}
-                selectedDate={selectedDate}
-                selectedDateTypeObj={selectedDateTypeObj}
-            />
+            <div className="min-h-fit pb-20">
+                <ClassOrganization
+                    classInfo={selectedClass}
+                    selectedPeriod={selectedPeriod}
+                    selectedRotation={selectedRotation}
+                    selectedDate={selectedDate}
+                    selectedDateTypeObj={selectedDateTypeObj}
+                />
+            </div>
             <footer className="flex w-full fixed bottom-0">
                 {isAdmin && (
                     <button className={`px-4 py-2 rounded font-semibold transition-colors bg-baseOrange hover:bg-darkOrange text-white w-full`} onClick={() => handleContinueBack()}>
