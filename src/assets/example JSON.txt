@@ -1,0 +1,6 @@
+{ 
+    "name": "Alice Johnson", 
+    "sound": "src/assets/mixkit-cool-interface-click-tone-2568.wav",
+    "text": "blue",
+    "background": "red"
+}

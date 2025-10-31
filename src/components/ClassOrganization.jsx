@@ -10,19 +10,22 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
         const classKey = buildClassKey(selectedRotation, selectedPeriod, day);
 
         const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
-        const existingRecord = stored[selectedRotation]?.[selectedPeriod]?.[formatDateKey(day)];
-        const existingStudents = existingRecord?.presentStudents || [];
+        const existingRecord = stored?.[selectedRotation]?.[selectedPeriod]?.[formatDateKey(day)] || {};
+
+        const existingStudents = [
+            ...(existingRecord.presentStudents || []),
+            ...(existingRecord.absentStudents?.filter(absentStudent => absentStudent.note === "FLAGGED") || []),
+        ];
 
         const tempStorage = JSON.parse(sessionStorage.getItem("selectedStudentsTemp")) || {};
         const tempStudents = tempStorage[classKey] || [];
 
-        // Merge submitted and temp safely
-        const mergedStudents = [...existingStudents];
+        const merged = [...existingStudents];
         tempStudents.forEach((student) => {
-            if (!mergedStudents.some((existing) => existing.name === student.name)) mergedStudents.push(student);
+            if (!merged.some((existingStudent) => existingStudent.name === student.name)) merged.push(student);
         });
 
-        return mergedStudents;
+        return merged;
     });
     
     // Save temp students on change
@@ -45,32 +48,71 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
     const handleClassEntry = (studentName) => {
         const currentTime = getCurrentTime();
 
+        // const now = new Date();
+
+        // now.setHours(12);
+        // now.setMinutes(48);
+        // now.setSeconds(0);
+
+        // const currentTime = now.toLocaleTimeString([], {
+        //     hour: "2-digit",
+        //     minute: "2-digit",
+        //     second: "2-digit",
+        //     hour12: true
+        // });
+
+        const day = selectedDate || getTodayDate();
+
+        const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
+        const existingRecord =
+            stored?.[selectedRotation]?.[selectedPeriod]?.[formatDateKey(day)] || {};
+
+        const alreadySubmittedNames = (existingRecord.presentStudents || [])
+            .filter(student => student.note !== "FLAGGED")
+            .map(student => student.name);
+
         setSelectedStudents((prev) => {
-            const exists = prev.find((student) => student.name === studentName);
-            if (exists) return prev.filter((student) => student.name !== studentName);
-                return [...prev, { name: studentName, timestamp: currentTime }];
+            const isSubmitted = alreadySubmittedNames.includes(studentName);
+            const isTempSelected = prev.some((student) => student.name === studentName && !isSubmitted);
+
+            if (isSubmitted) return prev;
+
+            if (isTempSelected) {
+                return prev.filter((student) => student.name !== studentName);
+            }
+
+            return [...prev, { name: studentName, timestamp: currentTime }];
         });
     };
 
     const isStudentInPeriod = (periodName, student) => {
         const { start: periodStart, end: periodEnd } = selectedDateTypeObj[periodName];
         if (!periodStart || !periodEnd) return false;
-
         if (!student.timestamp || typeof student.timestamp !== "string") return false;
-        const [timePart, modifier] = student.timestamp.split(" ");
 
+        const [timePart, modifier] = student.timestamp.split(" ");
         const [hourStr, minuteStr, secondStr] = timePart.split(":");
-        const hour = (modifier === "PM" && Number(hourStr) < 12) ? Number(hourStr) + 12 : Number(hourStr);
+        const hour = (modifier === "PM" && Number(hourStr) < 12)
+            ? Number(hourStr) + 12
+            : (modifier === "AM" && Number(hourStr) === 12)
+                ? 0
+                : Number(hourStr);
         const minute = Number(minuteStr);
         const second = Number(secondStr) || 0;
 
         const studentTime = new Date();
         studentTime.setHours(hour, minute, second, 0);
 
-        const startTime = new Date();
-        startTime.setHours(...periodStart.split(":").map(Number), 0, 0);
-        const endTime = new Date();
-        endTime.setHours(...periodEnd.split(":").map(Number), 0, 0);
+        const parsePeriodTime = (timeStr) => {
+            const [h, m] = timeStr.split(":").map(Number);
+            const hr = (h < 7) ? h + 12 : h; // 1–6 treated as pm
+            const d = new Date();
+            d.setHours(hr, m, 0, 0);
+            return d;
+        };
+
+        const startTime = parsePeriodTime(periodStart);
+        const endTime = parsePeriodTime(periodEnd);
 
         return studentTime >= startTime && studentTime <= endTime;
     };
@@ -91,31 +133,34 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
             currentClassStudents.some((current) => current.name === student.name)
         );
 
-        // Split on-time vs late
+        // Split on-time vs flagged
         const onTimeStudents = selectedForThisClass.filter(student =>
             isStudentInPeriod(selectedPeriod, student)
         );
 
-        const lateStudents = selectedForThisClass
-            .filter(student => !isStudentInPeriod(selectedPeriod, student))
+        const flaggedStudents = selectedForThisClass
+            .filter(student => 
+                !isStudentInPeriod(selectedPeriod, student) && 
+                !onTimeStudents.some(flagged => flagged.name === student.name)
+            ) 
             .map(student => ({
                 name: student.name,
                 timestamp: student.timestamp,
                 note: "FLAGGED",
             }));
 
-        // Absent students = not selected and note late students (with note)
+        // Absent students = not selected and note flagged students (with note)
         const absentStudents = currentClassStudents
             .filter(currentStudent =>
                 !onTimeStudents.some(onTime => onTime.name === currentStudent.name) &&
-                !lateStudents.some(late => late.name === currentStudent.name)
+                !flaggedStudents.some(flagged => flagged.name === currentStudent.name)
             )
             .map(currentStudent => ({
                 name: currentStudent.name,
                 timestamp: null,
             }));
 
-        const finalAbsentStudents = [...lateStudents, ...absentStudents];
+        const finalAbsentStudents = [...flaggedStudents, ...absentStudents];
 
         stored[selectedRotation][selectedPeriod][dateKey] = {
             date: calendarDateToObject(day),
@@ -137,6 +182,10 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
         localStorage.setItem("attendanceRecords", JSON.stringify(stored));
     };
 
+    const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
+    const day = selectedDate || getTodayDate();
+    const dateKey = formatDateKey(day);
+
     return (
         <div className="flex flex-col items-center gap-4">
             <RippleButton
@@ -149,24 +198,36 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
             />
             <div className="flex flex-wrap justify-center gap-3">
                 {classInfo.students.map((student, index) => {
-                    const isSelected = selectedStudents.some((s) => s.name === student.name);
+                    const record = stored?.[selectedRotation]?.[selectedPeriod]?.[dateKey];
+
+                    const isSubmitted = record?.presentStudents
+                        ?.filter((presentStudent) => presentStudent.note !== "FLAGGED")
+                        ?.some((presentStudent) => presentStudent.name === student.name);
+
+                    const isFlagged = record?.absentStudents
+                        ?.some((absentStudent) => absentStudent.name === student.name && absentStudent.note === "FLAGGED");
+
+                    const isSelected = selectedStudents.some((selectedStudent) => selectedStudent.name === student.name);
 
                     return (
                         <RippleButton
                             key={`${classInfo.period}-${student.name}-${index}`}
+                            disabled={isSubmitted}
                             onClick={() => {
-                                handleClassEntry(student.name);
-                                playSound(student.sound);
+                                if (!isSubmitted) {
+                                    handleClassEntry(student.name);
+                                    playSound(student.sound);
+                                }
                             }}
-                            rippleClassName="bg-white/80"
-                            variant={isSelected ? "outline" : "default"}
-                            size="sm"
-                            className={`w-36 h-18 text-center font-semibold transition-colors duration-400
-                                ${isSelected ? "bg-black text-white" : "bg-baseOrange hover:bg-darkOrange text-white"}`}
-                            style={{
-                                backgroundColor: !isSelected && student.background ? student.background : undefined,
-                                color: !isSelected && student.text ? student.text : undefined,
-                            }}
+                            className={`w-36 h-18 text-center font-semibold ${
+                                isSubmitted
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : isFlagged
+                                        ? "bg-red-600 text-white hover:bg-red-700"
+                                        : isSelected
+                                            ? "bg-black text-white"
+                                            : "bg-baseOrange hover:bg-darkOrange text-white"
+                            }`}
                         >
                             {student.name}
                         </RippleButton>
@@ -180,3 +241,7 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
 export default ClassOrganization;
 // make either a class clear button
 // or a case for removing students
+
+// make sure the flag students dont get overwritten by students when I click on them blah blah blah
+// flaged students should only be students who have a time attatched to them that is out of the class time
+// not from when the submission is handled
