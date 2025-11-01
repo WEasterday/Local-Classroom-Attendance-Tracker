@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useLocation } from "react-router";
 import { useNavigate } from "react-router"
 import DateTypeController from '../components/DateTypeController.jsx'
@@ -7,6 +7,7 @@ import DateController from '../components/DateController.jsx'
 import RotationController from '../components/RotationController.jsx'
 import classData from '../assets/ClassData.json'
 import { getTodayDate } from "../utils/dateUtils";
+import { downloadWeeklyAttendanceCSV } from "../utils/downloadAttendance";
 
 const ClassSelection = ({isAdmin}) => {   
     const baseClass = "px-6 py-2 rounded-xl font-semibold transition-colors bg-baseOrange hover:bg-darkOrange text-white shadow-sm";
@@ -79,6 +80,11 @@ const ClassSelection = ({isAdmin}) => {
                     {isAdmin && (
                         <button className={baseClass} onClick={() => handleContinueToData()}>
                             Class Data
+                        </button>
+                    )}
+                    {isAdmin && (
+                        <button className={baseClass} onClick={() => downloadWeeklyAttendanceCSV(selectedDate)}>
+                            Week CSV
                         </button>
                     )}
                 </div>

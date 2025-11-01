@@ -75,6 +75,7 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
     const handleClassEntry = (studentName) => {
         const currentTime = getCurrentTime();
 
+        // for testing go to 1 Hour Day, 6th Grade
         // const now = new Date();
 
         // now.setHours(12);
@@ -133,9 +134,9 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
         const parsePeriodTime = (timeStr) => {
             const [h, m] = timeStr.split(":").map(Number);
             const hr = (h < 7) ? h + 12 : h; // 1–6 treated as pm
-            const d = new Date();
-            d.setHours(hr, m, 0, 0);
-            return d;
+            const date = new Date();
+            date.setHours(hr, m, 0, 0);
+            return date;
         };
 
         const startTime = parsePeriodTime(periodStart);
@@ -193,6 +194,7 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
             date: calendarDateToObject(day),
             selectedRotation,
             selectedPeriod,
+            selectedDateTypeObj,
             presentStudents: onTimeStudents,
             absentStudents: finalAbsentStudents,
         };
@@ -260,15 +262,19 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
                                     playSound(student.sound);
                                 }
                             }}
-                            className={`w-44 h-20 text-center font-semibold ${
+                            className={`w-44 h-20 text-center font-semibold text-white ${
                                 isSubmitted
-                                    ? "opacity-50 cursor-not-allowed bg-lightGray text-white"
+                                    ? "cursor-not-allowed bg-lightGray"
                                     : isFlagged
-                                        ? "bg-redAccent text-white"
+                                        ? "bg-redMain" 
                                         : isSelected
-                                            ? "bg-black text-white"
-                                            : "bg-baseOrange hover:bg-darkOrange text-white"
+                                            ? "bg-black hover:bg-black"
+                                            : "bg-baseOrange hover:bg-darkOrange"
                             }`}
+                            style={{
+                                backgroundColor: !isSelected && student.background ? student.background : undefined,
+                                color: !isSelected && student.text ? student.text : undefined,
+                            }}
                         >
                             {student.name}
                         </RippleButton>
@@ -280,9 +286,4 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
 };
 
 export default ClassOrganization;
-// make either a class clear button
-// or a case for removing students
 
-// make sure the flag students dont get overwritten by students when I click on them blah blah blah
-// flaged students should only be students who have a time attatched to them that is out of the class time
-// not from when the submission is handled

@@ -11,6 +11,7 @@ export default {
       colors: {
         baseOrange: '#f8941d',
         darkOrange: '#ac6206',
+        redMain: '#d8061bff',
         redAccent: '#c01e2e',
         lightGray: '#bfc0c2'
       },

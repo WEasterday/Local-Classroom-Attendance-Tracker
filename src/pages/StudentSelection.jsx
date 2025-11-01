@@ -51,14 +51,8 @@ const StudentSelection = ({isAdmin}) => {
         (classObj) => classObj.period === selectedPeriod
     );
 
-    // something is wrong with saving the students
-    // if you go to the first period, and submit, then go to the next period
-    // the next periods selectedStudents is cleared sometimes
-
-    // If I selected students in each class, then go back to the main page, go back in
-    // submit the first class, the rest of the classes have their tempSelectedStudents cleared
     return (
-        <div className="flex flex-col items-center gap-8 text-center min-h-screen justify-start sm:justify-center pt-8">
+        <div className="flex flex-col items-center gap-6 text-center min-h-screen justify-start sm:justify-center pt-8">
             {/* could definitely make this into a component */}
             {(selectedDateTypeObj.description != "Normal" && (
                 <div>

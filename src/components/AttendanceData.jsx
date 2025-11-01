@@ -1,45 +1,11 @@
 import { formatDateKey } from "../utils/dateUtils";
 
 const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation, selectedDateTypeObj}) => {
-    const baseClass = "px-4 py-2 rounded font-semibold transition-colors bg-baseOrange hover:bg-darkOrange text-white"
     const dateKey = formatDateKey(selectedDate);
     const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
     const attendance = stored[selectedRotation]?.[selectedPeriod]?.[dateKey] || null;
 
     console.log("stored:", stored)
-
-    const downloadSingleCSV = () => {
-        const allStudents = [
-            ...attendance.presentStudents.map(student => ({
-                Name: student.name,
-                Status: "Present",
-                Timestamp: student.timestamp || "",
-            })),
-            ...attendance.absentStudents.map(student => ({
-                Name: student.name,
-                Status: "Absent",
-                Timestamp: "",
-            })),
-        ];
-
-        // add todays date, period, and rotation
-        const headers = ["Name", "Status", "Timestamp"];
-        const rows = allStudents.map(student => [
-            student.Name,
-            student.Status,
-            student.Timestamp,
-        ]);
-
-        // figure out why timestamp is ###### in excel
-        const csvContent = [headers, ...rows].map(element => element.join(",")).join("\n");
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `Attendance_${selectedRotation}_${selectedPeriod}_${dateKey}.csv`;
-        link.click();
-    };
 
     if (!attendance) {
         return (
@@ -51,7 +17,7 @@ const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation, select
     }
 
     return (
-        <div>
+        <div className="pb-14">
             <h2>
                 {selectedRotation} Day {selectedPeriod} Period {attendance.date.month}/{attendance.date.day}/{attendance.date.year}
             </h2>
@@ -73,22 +39,6 @@ const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation, select
                     <li key={`absent-${index}`}>{`${student.name} ${student.note  || ""} ${student.timestamp  || ""}`}</li>
                 ))}
             </ul>
-
-            <div className="mt-4 flex gap-3">
-                <button
-                    onClick={downloadSingleCSV}
-                    className={baseClass}
-                >
-                    Download This Class CSV
-                </button>
-
-                {/* <button
-                    onClick={downloadAllForDateCSV}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                >
-                    Download All Classes for This Day
-                </button> */}
-            </div>
         </div>
     );
 }

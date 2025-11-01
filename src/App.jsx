@@ -11,7 +11,7 @@ import {HeroUIProvider} from "@heroui/react";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated]= useState(false)
-    const [isAdmin, setIsAdmin]= useState(true)
+    const [isAdmin, setIsAdmin]= useState(false)
 
     // localStorage.clear();
     // sessionStorage.clear();
