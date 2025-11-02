@@ -42,7 +42,7 @@ const ClassData = () => {
                 </button>
                 <button
                     onClick={() =>
-                        downloadAttendanceCSV(attendance, selectedRotation, selectedPeriod, selectedDate, selectedDateTypeObj)
+                        downloadAttendanceCSV(attendance, selectedRotation, selectedPeriod, selectedDate)
                     }
                     className={baseClass}
                 >

@@ -13,17 +13,16 @@ export const downloadAttendanceCSV = (
     attendance,
     selectedRotation,
     selectedPeriod,
-    selectedDate,
-    selectedDateTypeObj
+    selectedDate
 ) => {
     if (!attendance) return;
 
     const dateKey = formatDateKey(selectedDate);
     const { month, day, year } = attendance.date;
-    const scheduleType = selectedDateTypeObj?.description || "Unknown Schedule";
-    const daySchedule = (attendanceRecords?.[rotation]?.[period]?.[dateKey]?.selectedDateTypeObj) || {};
-    const startTime = daySchedule.start || "N/A";
-    const endTime = daySchedule.end || "N/A";
+    const scheduleType = attendance.selectedDateTypeObj?.description || "Unknown Schedule";
+    const daySchedule = (attendance.selectedDateTypeObj) || {};
+    const startTime = daySchedule[selectedPeriod].start || "N/A";
+    const endTime = daySchedule[selectedPeriod].end || "N/A";
 
     // important data
     const metaRows = [

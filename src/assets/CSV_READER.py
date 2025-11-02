@@ -6,14 +6,14 @@ base_dir = os.path.dirname(__file__)
 csv_path = os.path.join(base_dir, "Roster.csv")
 output_path = os.path.join(base_dir, "ClassData.json")
 
-# --- Step 1: Read CSV manually ---
+# --- Read CSV manually ---
 with open(csv_path, "r", encoding="utf-8") as f:
     lines = [line.strip() for line in f if line.strip()]
 
 headers = lines[0].split(",")
 rows = [dict(zip(headers, line.split(","))) for line in lines[1:]]
 
-# --- Step 2: Helper functions ---
+# --- Helper functions ---
 def get_day(course):
     """Determine if the course belongs to A or B day (odd = A, even = B)."""
     if not course:
@@ -39,7 +39,7 @@ def is_enrichment_course(course):
     """Return True if this row represents an Enrichment class."""
     return "enrichment" in str(course).lower()
 
-# --- Step 3: Parse and clean student list ---
+# --- Parse and clean student list ---
 students = []
 for row in rows:
     first = row.get("First Name", "").strip()
@@ -67,7 +67,7 @@ for row in rows:
             "day": day,
         })
 
-# --- Step 4: Remove duplicates (same student + period + day) ---
+# --- Remove duplicates (same student + period + day) ---
 unique_students = []
 seen = set()
 
@@ -77,7 +77,7 @@ for s in students:
         seen.add(key)
         unique_students.append(s)
 
-# --- Step 5: Build A/B structure ---
+# --- Build A/B structure ---
 result = {"A": [], "B": []}
 period_order = ["6th Grade", "7th Grade", "8th Grade", "Enrichment"]
 
@@ -97,7 +97,6 @@ for day in ["A", "B"]:
         for p, studs in day_periods.items() if studs
     ]
 
-# --- Step 6: Write JSON cleanly ---
 with open(output_path, "w", encoding="utf-8") as f:
     json.dump(result, f, indent=2)
 

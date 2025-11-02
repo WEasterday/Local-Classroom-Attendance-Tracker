@@ -78,7 +78,7 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
         // for testing go to 1 Hour Day, 6th Grade
         // const now = new Date();
 
-        // now.setHours(12);
+        // now.setHours(11);
         // now.setMinutes(48);
         // now.setSeconds(0);
 

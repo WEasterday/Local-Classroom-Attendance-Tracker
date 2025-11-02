@@ -1,11 +1,12 @@
 import { formatDateKey } from "../utils/dateUtils";
 
-const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation, selectedDateTypeObj}) => {
+const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation}) => {
     const dateKey = formatDateKey(selectedDate);
     const stored = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
     const attendance = stored[selectedRotation]?.[selectedPeriod]?.[dateKey] || null;
 
     console.log("stored:", stored)
+    console.log(attendance);
 
     if (!attendance) {
         return (
@@ -23,7 +24,7 @@ const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation, select
             </h2>
 
             <h2>
-                {selectedDateTypeObj.description} Schedule from {selectedDateTypeObj[selectedPeriod].start} - {selectedDateTypeObj[selectedPeriod].end}
+                {attendance.selectedDateTypeObj.description} Schedule from {attendance.selectedDateTypeObj[selectedPeriod].start} - {attendance.selectedDateTypeObj[selectedPeriod].end}
             </h2>
 
             <h3 className="font-bold">Present Students</h3>
