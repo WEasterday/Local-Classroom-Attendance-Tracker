@@ -73,21 +73,21 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
     };
 
     const handleClassEntry = (studentName) => {
-        const currentTime = getCurrentTime();
+        // const currentTime = getCurrentTime();
 
         // for testing go to 1 Hour Day, 6th Grade
-        // const now = new Date();
+        const now = new Date();
 
-        // now.setHours(11);
-        // now.setMinutes(48);
-        // now.setSeconds(0);
+        now.setHours(12);
+        now.setMinutes(48);
+        now.setSeconds(0);
 
-        // const currentTime = now.toLocaleTimeString([], {
-        //     hour: "2-digit",
-        //     minute: "2-digit",
-        //     second: "2-digit",
-        //     hour12: true
-        // });
+        const currentTime = now.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        });
 
         const day = selectedDate || getTodayDate();
 
@@ -239,7 +239,7 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
                     playSound();
                 }}
                 rippleClassName="bg-white/50"
-                className="absolute top-0 left-0 size-6 bg-transparent hover:bg-black"
+                className="absolute top-0 left-0 size-6 bg-transparent hover:bg-transparent"
             />
             <div className="flex flex-wrap justify-center gap-3">
                 {classInfo.students.map((student, index) => {
