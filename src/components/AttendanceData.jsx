@@ -30,7 +30,7 @@ const AttendanceData = ({ selectedDate, selectedPeriod, selectedRotation}) => {
             <h3 className="font-bold">Present Students</h3>
             <ul>
                 {attendance.presentStudents.map((student, index) => (
-                    <li key={`present-${index}`}>{student.name} at {student.timestamp}</li>
+                    <li key={`present-${index}`}>{`${student.name} ${student.note  || ""} ${student.timestamp  || ""}`}</li>
                 ))}
             </ul>
 

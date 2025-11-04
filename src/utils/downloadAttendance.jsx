@@ -116,8 +116,17 @@ export const downloadWeeklyAttendanceCSV = (selectedDate) => {
             }
         }
 
+        const isWednesday = currentDate.getDay() === 3;
+
+        const effectiveClasses = rotationClasses.filter(({ period }) => {
+            const lower = period.toLowerCase();
+            if (isWednesday && lower === "enrichment") return false;
+            if (!isWednesday && lower === "compass") return false;
+            return true;
+        });
+
         // Check if any class has submissions for this day
-        const anyClassSubmitted = rotationClasses.some(({ period }) => {
+        const anyClassSubmitted = effectiveClasses.some(({ period }) => {
             const record = attendanceRecords?.[rotation]?.[period]?.[dateKey];
             return record && ((record.presentStudents?.length || 0) + (record.absentStudents?.length || 0)) > 0;
         });
@@ -132,8 +141,9 @@ export const downloadWeeklyAttendanceCSV = (selectedDate) => {
             continue;
         }
 
-        rotationClasses.forEach(({ period, students }) => {
+        effectiveClasses.forEach(({ period, students }) => {
             if (period.toLowerCase() === "enrichment" && dayType !== "Normal") return;
+            if (period.toLowerCase() === "compass" && dayType !== "Normal") return;
 
             // Get period schedule from selectedDateTypeObj
             const daySchedule = attendanceRecords?.[rotation]?.[period]?.[dateKey]?.selectedDateTypeObj || {};
@@ -147,6 +157,18 @@ export const downloadWeeklyAttendanceCSV = (selectedDate) => {
             let classAttendance = attendanceRecords?.[rotation]?.[period]?.[dateKey] || { presentStudents: [], absentStudents: [] };
 
             if (period.toLowerCase() === "enrichment") {
+                const otherRotation = rotation === "A" ? "B" : "A";
+                const otherRecord = attendanceRecords?.[otherRotation]?.[period]?.[dateKey] || { presentStudents: [], absentStudents: [] };
+
+                otherRecord.presentStudents.forEach(s => {
+                    if (!classAttendance.presentStudents.some(ps => ps.name === s.name)) classAttendance.presentStudents.push(s);
+                });
+                otherRecord.absentStudents.forEach(s => {
+                    if (!classAttendance.absentStudents.some(as => as.name === s.name)) classAttendance.absentStudents.push(s);
+                });
+            }
+
+            if (period.toLowerCase() === "compass") {
                 const otherRotation = rotation === "A" ? "B" : "A";
                 const otherRecord = attendanceRecords?.[otherRotation]?.[period]?.[dateKey] || { presentStudents: [], absentStudents: [] };
 

@@ -54,3 +54,10 @@ const ClassData = () => {
 };
 
 export default ClassData;
+
+// ok so there is anotehr class, only on wednesdays that replaces enrichment
+// colonial compass is that class and those students are being put inside the 6th Grade B day class
+// it only happens on wednesday and has the same logic as enrichment
+
+// make it so students are marked as flagged but still present if they come 3 minutes after the start of class
+// kids can come as early as 5 minutes before 

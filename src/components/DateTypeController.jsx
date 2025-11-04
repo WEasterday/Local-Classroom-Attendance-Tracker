@@ -11,6 +11,7 @@ const DateTypeController = ({ selectedDateTypeObj, setSelectedDateTypeObj }) => 
                     "7th Grade": { start: "9:31", end: "10:26" },
                     "8th Grade": { start: "8:33", end: "9:28" },
                     "Enrichment": { start: "1:05", end: "1:35" },
+                    "Compass": { start: "1:05", end: "1:35" },
                 });
                 break;
             case "1 Hour":
@@ -20,6 +21,7 @@ const DateTypeController = ({ selectedDateTypeObj, setSelectedDateTypeObj }) => 
                     "7th Grade": { start: "10:16", end: "11:06" },
                     "8th Grade": { start: "9:32", end: "10:13" },
                     "Enrichment": { start: null, end: null },
+                    "Compass": { start: null, end: null },
                 });
                 break;
             case "2 Hour":
@@ -29,6 +31,7 @@ const DateTypeController = ({ selectedDateTypeObj, setSelectedDateTypeObj }) => 
                     "7th Grade": { start: "11:05", end: "11:44" },
                     "8th Grade": { start: "1:06", end: "1:45" },
                     "Enrichment": { start: null, end: null },
+                    "Compass": { start: null, end: null },
                 });
                 break;
             case "1/2":
@@ -38,6 +41,7 @@ const DateTypeController = ({ selectedDateTypeObj, setSelectedDateTypeObj }) => 
                     "7th Grade": { start: "9:13", end: "9:50" },
                     "8th Grade": { start: "8:30", end: "9:05" },
                     "Enrichment": { start: null, end: null },
+                    "Compass": { start: null, end: null },
                 });
                 break;
         }

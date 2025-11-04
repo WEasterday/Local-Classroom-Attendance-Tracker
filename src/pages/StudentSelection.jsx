@@ -4,20 +4,49 @@ import RippleButton from "../components/ripple-button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import ClassOrganization from "../components/ClassOrganization.jsx";
 import classData from "../assets/ClassData.json";
+import { calendarDateToObject } from "../utils/dateUtils";
 
 const StudentSelection = ({isAdmin}) => {
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     const { selectedRotation, selectedPeriod, selectedDate, selectedDateTypeObj } = location.state || {};
+
+    if (!selectedRotation || !selectedPeriod) {
+        return <p>No class selected. Go back to home.</p>;
+    }
+    
+    let jsDate;
+    try {
+        const { year, month, day } = calendarDateToObject(selectedDate);
+        jsDate = new Date(year, parseInt(month, 10) - 1, parseInt(day, 10));
+    } catch {
+        jsDate = new Date();
+    }
+    const isWednesday = jsDate.getDay() === 3;
+
     const periodNumbers = Object.keys(selectedDateTypeObj)
-        .filter(period => period !== "description" && selectedDateTypeObj[period]?.start)
+        .filter((period) => {
+            if (period === "description") return false;
+            const hasTimes = selectedDateTypeObj[period]?.start;
+
+            if (!hasTimes) return false;
+            if (isWednesday && period === "Enrichment") return false;
+            if (!isWednesday && period === "Compass") return false;
+
+            return true;
+        })
         .sort((a, b) => {
             const [h1, m1] = selectedDateTypeObj[a].start.split(":").map(Number);
             const [h2, m2] = selectedDateTypeObj[b].start.split(":").map(Number);
-            const normalizeHour = h => (h < 4 ? h + 12 : h); // treat early hours as PM
-            return (normalizeHour(h1) * 60 + m1) - (normalizeHour(h2) * 60 + m2); //subtracts minutes, eg. negative means item1 is first
+            const normalizeHour = (h) => (h < 4 ? h + 12 : h);
+            return normalizeHour(h1) * 60 + m1 - (normalizeHour(h2) * 60 + m2);
         });
+
+    if (isWednesday && !periodNumbers.includes("Compass")) {
+        periodNumbers.push("Compass");
+    }
+    
     const currentIndex = periodNumbers.indexOf(selectedPeriod);
     
     const hasPrev = currentIndex > 0;
@@ -26,9 +55,7 @@ const StudentSelection = ({isAdmin}) => {
     const prevPeriod = hasPrev ? periodNumbers[currentIndex - 1] : null;
     const nextPeriod = hasNext ? periodNumbers[currentIndex + 1] : null;
 
-    if (!selectedRotation || !selectedPeriod) {
-        return <p>No class selected. Go back to home.</p>;
-    }
+    
 
     // handles if a student accidentally refreshes 
     // I need to make it so it keeps the permissions of the user, 

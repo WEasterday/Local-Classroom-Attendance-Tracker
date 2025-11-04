@@ -1,9 +1,34 @@
 import { RippleButton } from "../components/ripple-button";
+import { calendarDateToObject } from "../utils/dateUtils";
 
-const PeriodController = ({ selectedPeriod, setSelectedPeriod, selectedDay, selectedDateTypeObj }) => {
+const PeriodController = ({ selectedPeriod, setSelectedPeriod, selectedDate, selectedDay, selectedDateTypeObj }) => {
+    let jsDate;
+    try {
+        const { year, month, day } = calendarDateToObject(selectedDate);
+        jsDate = new Date(year, parseInt(month, 10) - 1, parseInt(day, 10));
+    } catch {
+        jsDate = new Date();
+    }
+    const isWednesday = jsDate.getDay() === 3;
+
+    const effectivePeriods = [
+
+        ...(Array.isArray(selectedDay)
+            ? selectedDay.filter(p =>
+                isWednesday
+                    ? p.period !== "Enrichment"
+                    : p.period !== "Compass"   
+              )
+            : []),
+            
+        ...(isWednesday && !selectedDay.some(p => p.period === "Compass")
+            ? [{ period: "Compass" }]
+            : [])
+    ];
+    
     return (
         <div className="flex flex-wrap justify-center items-center gap-3 h-auto sm:h-12">
-            {selectedDay
+            {effectivePeriods
                 .filter(classPeriod => selectedDateTypeObj[classPeriod.period]?.start)
                 .sort((item1, item2) => {
                     const [h1, m1] = selectedDateTypeObj[item1.period].start.split(":").map(Number);

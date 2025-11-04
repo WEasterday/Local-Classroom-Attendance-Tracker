@@ -73,21 +73,21 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
     };
 
     const handleClassEntry = (studentName) => {
-        // const currentTime = getCurrentTime();
+        const currentTime = getCurrentTime();
 
         // for testing go to 1 Hour Day, 6th Grade
-        const now = new Date();
+        // const now = new Date();
 
-        now.setHours(12);
-        now.setMinutes(48);
-        now.setSeconds(0);
+        // now.setHours(2);
+        // now.setMinutes(58);
+        // now.setSeconds(0);
 
-        const currentTime = now.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true
-        });
+        // const currentTime = now.toLocaleTimeString([], {
+        //     hour: "2-digit",
+        //     minute: "2-digit",
+        //     second: "2-digit",
+        //     hour12: true
+        // });
 
         const day = selectedDate || getTodayDate();
 
@@ -142,7 +142,37 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
         const startTime = parsePeriodTime(periodStart);
         const endTime = parsePeriodTime(periodEnd);
 
-        return studentTime >= startTime && studentTime <= endTime;
+        return studentTime >= new Date(startTime.getTime() - 5 * 60 * 1000) && studentTime <= endTime;
+    };
+
+    const isStudentTardy = (periodName, student) => {
+        const { start: periodStart, end: periodEnd } = selectedDateTypeObj[periodName];
+
+        const [timePart, modifier] = student.timestamp.split(" ");
+        const [hourStr, minuteStr, secondStr] = timePart.split(":");
+        const hour = (modifier === "PM" && Number(hourStr) < 12)
+            ? Number(hourStr) + 12
+            : (modifier === "AM" && Number(hourStr) === 12)
+                ? 0
+                : Number(hourStr);
+        const minute = Number(minuteStr);
+        const second = Number(secondStr) || 0;
+
+        const studentTime = new Date();
+        studentTime.setHours(hour, minute, second, 0);
+
+        const parsePeriodTime = (timeStr) => {
+            const [h, m] = timeStr.split(":").map(Number);
+            const hr = (h < 7) ? h + 12 : h; // 1–6 treated as pm
+            const date = new Date();
+            date.setHours(hr, m, 0, 0);
+            return date;
+        };
+
+        const startTime = parsePeriodTime(periodStart);
+        const endTime = parsePeriodTime(periodEnd);
+
+        return studentTime >= new Date(startTime.getTime() + 3 * 60 * 1000) && studentTime <= endTime;
     };
 
     const submitClassAttendance = () => {
@@ -161,10 +191,25 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
             currentClassStudents.some((current) => current.name === student.name)
         );
 
-        // Split on-time vs flagged
-        const onTimeStudents = selectedForThisClass.filter(student =>
-            isStudentInPeriod(selectedPeriod, student)
-        );
+        const tardyStudents = selectedForThisClass
+            .filter(student => 
+                isStudentTardy(selectedPeriod, student)
+            )
+            .map(student => ({
+                name: student.name,
+                timestamp: student.timestamp,
+                note: "TARDY",
+            }))
+
+         // Split on-time vs flagged
+        const onTimeStudents = selectedForThisClass
+            .filter(student =>
+                isStudentInPeriod(selectedPeriod, student)
+            )
+            .filter(student =>
+                !tardyStudents.some(tardyStudent => tardyStudent.name === student.name)
+            )
+        ;
 
         const flaggedStudents = selectedForThisClass
             .filter(student => 
@@ -176,7 +221,7 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
                 timestamp: student.timestamp,
                 note: "FLAGGED",
             }));
-
+        
         // Absent students = not selected and note flagged students (with note)
         const absentStudents = currentClassStudents
             .filter(currentStudent =>
@@ -189,13 +234,15 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
             }));
 
         const finalAbsentStudents = [...flaggedStudents, ...absentStudents];
+        const finalPresentStudents = [...tardyStudents, ...onTimeStudents]
+    
 
         stored[selectedRotation][selectedPeriod][dateKey] = {
             date: calendarDateToObject(day),
             selectedRotation,
             selectedPeriod,
             selectedDateTypeObj,
-            presentStudents: onTimeStudents,
+            presentStudents: finalPresentStudents,
             absentStudents: finalAbsentStudents,
         };
 
@@ -244,32 +291,37 @@ const ClassOrganization = ({ classInfo, selectedPeriod, selectedRotation, select
             <div className="flex flex-wrap justify-center gap-3">
                 {classInfo.students.map((student, index) => {
                     const isSubmitted = record?.presentStudents
-                        ?.filter((presentStudent) => presentStudent.note !== "FLAGGED")
+                        ?.filter((presentStudent) => presentStudent.note !== "TARDY")
                         ?.some((presentStudent) => presentStudent.name === student.name);
 
                     const isFlagged = record?.absentStudents
                         ?.some((absentStudent) => absentStudent.name === student.name && absentStudent.note === "FLAGGED");
+
+                    const isTardy = record?.presentStudents
+                        ?.some((presentStudents) => presentStudents.name === student.name && presentStudents.note === "TARDY");
 
                     const isSelected = selectedStudents.some((selectedStudent) => selectedStudent.name === student.name);
 
                     return (
                         <RippleButton
                             key={`${classInfo.period}-${student.name}-${index}`}
-                            disabled={isSubmitted || isFlagged}
+                            disabled={isSubmitted || isFlagged || isTardy}
                             onClick={() => {
-                                if (!isSubmitted && !isFlagged) {
+                                if (!isSubmitted && !isFlagged && !isTardy) {
                                     handleClassEntry(student.name);
                                     playSound(student.sound);
                                 }
                             }}
-                            className={`w-44 h-20 text-center font-semibold text-white ${
+                            className={`w-44 h-20 text-center font-semibold text-white disabled:opacity-100 ${
                                 isSubmitted
-                                    ? "cursor-not-allowed bg-lightGray"
+                                    ? "bg-lightGray"
                                     : isFlagged
                                         ? "bg-redMain" 
-                                        : isSelected
-                                            ? "bg-black hover:bg-black"
-                                            : "bg-baseOrange hover:bg-darkOrange"
+                                        : isTardy
+                                            ? "bg-[rgba(250,204,21,.8)]"
+                                            : isSelected
+                                                ? "bg-black hover:bg-black"
+                                                : "bg-baseOrange hover:bg-darkOrange"
                             }`}
                             style={{
                                 backgroundColor: !isSelected && student.background ? student.background : undefined,

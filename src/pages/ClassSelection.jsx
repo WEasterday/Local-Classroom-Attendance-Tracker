@@ -31,6 +31,7 @@ const ClassSelection = ({isAdmin}) => {
             "7th Grade": { start: "9:31", end: "10:26"},
             "8th Grade": { start: "8:33", end: "9:28"},
             "Enrichment": { start: "1:05", end: "1:35"},
+            "Compass": { start: "1:05", end: "1:35"},
         }
     );
     
@@ -64,6 +65,7 @@ const ClassSelection = ({isAdmin}) => {
                 setSelectedPeriod={setSelectedPeriod}
                 selectedDay={selectedDay}
                 selectedDateTypeObj={selectedDateTypeObj}
+                selectedDate={selectedDate}
             />
             <div className="flex flex-col items-center w-full gap-5">
                 {isAdmin && (
